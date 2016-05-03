@@ -3,8 +3,10 @@ package com.mygdx.sss;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -17,16 +19,20 @@ public class ScrollingShooter extends ApplicationAdapter
 {
 	SpriteBatch sb;
 	ShapeRenderer sr;
+	BitmapFont bf;
 	Map map;
 	Player p;
 	Bird b;
 	EntityManager em;
+	
+	public String state = "start";
 	
 	@Override
 	public void create()
 	{
 		sb = new SpriteBatch();
 		sr = new ShapeRenderer();
+		bf = new BitmapFont();
 		sr.setAutoShapeType(true);
 		map = new Map("map1");
 		Vector2 pos = new Vector2(50, 200);
@@ -35,7 +41,6 @@ public class ScrollingShooter extends ApplicationAdapter
 		pos = new Vector2(100, 400);
 		direction = new Vector2();
 		em = new EntityManager(p);
-		// b = new Bird(pos,direction,p);
 	}
 	
 	@Override
@@ -44,17 +49,47 @@ public class ScrollingShooter extends ApplicationAdapter
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		checkInputs();
-		checkPlayer();
-		p.update();
-		em.update();
-		sb.begin();
-		sb.draw(new Texture(Gdx.files.internal("sprites/sky.png")), 0, 0, 1300, 600);
-		map.draw(sb);
-		sb.end();
-		sr.begin(ShapeRenderer.ShapeType.Filled);
-		p.draw(sr);
-		em.renderBirds(sr);
-		sr.end();
+		
+		switch(state)
+		{
+			case "start":
+			{
+				sr.begin(ShapeRenderer.ShapeType.Filled);
+				sr.setColor(Color.DARK_GRAY);
+				sr.rect(400, 350, 500, 300);
+				sr.end();
+
+				sb.begin();
+				bf.setColor(Color.GOLD);
+				bf.draw(sb, "Press 'Enter' to start.", 600, 75);
+				sb.draw(new Texture(Gdx.files.internal("sprites/birdemic.png")), 400, 100, 500, 500);
+				sb.end();
+				break;
+			}
+			case "game":
+			{
+				//Updates
+				p.update();
+				em.update();
+				//Checks
+				checkPlayer();
+				//Sprite Batch
+				sb.begin();
+				sb.draw(new Texture(Gdx.files.internal("sprites/sky.png")), 0, 0, 1300, 600);
+				map.draw(sb);
+				sb.end();
+				//Shape Renderer
+				sr.begin(ShapeRenderer.ShapeType.Filled);
+				p.draw(sr);
+				em.renderBirds(sr);
+				sr.end();
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
 	}
 	
 	private void checkPlayer()
@@ -177,5 +212,17 @@ public class ScrollingShooter extends ApplicationAdapter
 		p.setDirection(Gdx.input.getX(), 600 - Gdx.input.getY());
 		if (Gdx.input.justTouched())
 			p.shoot();
+		//Misc
+		if (Gdx.input.isKeyJustPressed(Keys.ENTER))
+		{
+			if(state.equals("start"))
+			{
+				state = "game";
+			}
+			else if(state.equals("game"))
+			{
+				state = "pause";
+			}
+		}
 	}
 }

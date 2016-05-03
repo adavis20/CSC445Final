@@ -10,9 +10,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Entity implements Steerable<Vector2>
 {
+	//Necessary
 	public Vector2 pos;
 	public Vector2 vel;
 	public Vector2 accel;
+	int health;
+	public boolean jumping;
+	public ArrayList<Bullet> bullets;
+	
+	//Junk
 	float orientation;
 	float angularVelocity;
 	boolean tagged;
@@ -21,14 +27,13 @@ public class Player extends Entity implements Steerable<Vector2>
 	float maxLinearAcceleration;
 	float maxAngularSpeed;
 	float maxAngularAcceleration;
-	int health;
 	double DEGREES_TO_RADIANS = (double) (Math.PI / 180);
 	boolean independentFacing;
-	public boolean jumping;
-	public ArrayList<Bullet> bullets;
 	
+	//Constants
 	public static final int MAX_ACCEL = 10;
 	public static final int MAX_VEL = 10;
+	public static final int MAX_BULLETS = 20;
 	public static final Vector2 GRAVITY = new Vector2(0, -2);
 	
 	public Player(Vector2 pos, Vector2 direction)
@@ -67,18 +72,18 @@ public class Player extends Entity implements Steerable<Vector2>
 		truncate(vel, MAX_VEL);
 		pos.add(vel);
 		
-		/*
-		 * System.out.println("Player pos: " + pos.x + ", " + pos.y);
-		 * System.out.println("Player vel: " + vel.x + ", " + vel.y);
-		 * System.out.println("Player accel: " + accel.x + ", " + accel.y);
-		 * System.out.println("Player jumping: " + jumping);
-		 */
+		
+		 System.out.println("Player pos: " + pos.x + ", " + pos.y);
+		 System.out.println("Player vel: " + vel.x + ", " + vel.y);
+		 System.out.println("Player accel: " + accel.x + ", " + accel.y);
+		 System.out.println("Player jumping: " + jumping);
+		 
 		
 		// Bullets tick
 		ArrayList<Bullet> toRemove = new ArrayList<Bullet>();
 		for (Bullet b : bullets)
 		{
-			b.tick();
+			b.update();
 			if (b.pos.x > 1300 || b.pos.x < 0 || b.pos.y < 0 || b.pos.y > 600)
 			{
 				toRemove.add(b);
@@ -121,7 +126,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	
 	public void shoot()
 	{
-		if (bullets.size() < 10)
+		if (bullets.size() < MAX_BULLETS)
 		{
 			bullets.add(new Bullet(this.pos.cpy().add(25, 25), this.direction.cpy().scl(10, 10)));
 		}

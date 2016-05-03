@@ -41,7 +41,7 @@ public class Bird extends Entity implements Steerable<Vector2>
 	public Bird(Vector2 pos, Vector2 direction, Player p)
 	{
 		super(pos, direction);
-		maxLinearSpeed = 1;
+		maxLinearSpeed = 0.3f;
 		maxLinearAcceleration = 1;
 		maxAngularSpeed = 1;
 		maxAngularAcceleration = 1;
@@ -51,6 +51,55 @@ public class Bird extends Entity implements Steerable<Vector2>
 		SB = new Seek<Vector2>(this, p);
 		independentFacing = false;
 	}
+	
+	@Override
+	public void update()
+	{
+		SB.calculateSteering(SA);
+		applySteering(SA, 10);
+	}
+	
+	public void draw(ShapeRenderer sr)
+	{
+		sr.setColor(Color.GOLD);
+		sr.rect(pos.x, pos.y, 20, 20);
+	}
+	
+	private void applySteering(SteeringAcceleration<Vector2> steering, float time)
+	{
+		// Update position and linear velocity. Velocity is trimmed to maximum
+		// speed
+		pos.mulAdd(linearVelocity, time);
+		this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
+		// Update orientation and angular velocity
+		if (independentFacing)
+		{
+			this.orientation += angularVelocity * time;
+			this.angularVelocity += steering.angular * time;
+		}
+		else
+		{
+			// For non-independent facing we have to align orientation to linear
+			// velocity
+			float newOrientation = calculateOrientationFromLinearVelocity(this);
+			if (newOrientation != this.orientation)
+			{
+				this.angularVelocity = (newOrientation - this.orientation) * time;
+				this.orientation = newOrientation;
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	public Vector2 getLinearVelocity()
@@ -216,43 +265,4 @@ public class Bird extends Entity implements Steerable<Vector2>
 		}
 		return character.vectorToAngle(character.getLinearVelocity());
 	}
-	
-	@Override
-	public void update()
-	{
-		SB.calculateSteering(SA);
-		applySteering(SA, 10);
-	}
-	
-	public void draw(ShapeRenderer sr)
-	{
-		sr.setColor(Color.GOLD);
-		sr.rect(pos.x, pos.y, 20, 20);
-	}
-	
-	private void applySteering(SteeringAcceleration<Vector2> steering, float time)
-	{
-		// Update position and linear velocity. Velocity is trimmed to maximum
-		// speed
-		pos.mulAdd(linearVelocity, time);
-		this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
-		// Update orientation and angular velocity
-		if (independentFacing)
-		{
-			this.orientation += angularVelocity * time;
-			this.angularVelocity += steering.angular * time;
-		}
-		else
-		{
-			// For non-independent facing we have to align orientation to linear
-			// velocity
-			float newOrientation = calculateOrientationFromLinearVelocity(this);
-			if (newOrientation != this.orientation)
-			{
-				this.angularVelocity = (newOrientation - this.orientation) * time;
-				this.orientation = newOrientation;
-			}
-		}
-	}
-	
 }
