@@ -25,7 +25,7 @@ public class ScrollingShooter extends ApplicationAdapter
 	Bird b;
 	EntityManager em;
 	
-	public String state = "start";
+	public char state = 's';
 	
 	@Override
 	public void create()
@@ -52,7 +52,7 @@ public class ScrollingShooter extends ApplicationAdapter
 		
 		switch(state)
 		{
-			case "start":
+			case 's':
 			{
 				sr.begin(ShapeRenderer.ShapeType.Filled);
 				sr.setColor(Color.DARK_GRAY);
@@ -66,7 +66,7 @@ public class ScrollingShooter extends ApplicationAdapter
 				sb.end();
 				break;
 			}
-			case "game":
+			case 'g':
 			{
 				//Updates
 				p.update();
@@ -215,13 +215,13 @@ public class ScrollingShooter extends ApplicationAdapter
 		//Misc
 		if (Gdx.input.isKeyJustPressed(Keys.ENTER))
 		{
-			if(state.equals("start"))
+			if(state == 's')
 			{
-				state = "game";
+				state = 'g';
 			}
-			else if(state.equals("game"))
+			else if(state == 'g')
 			{
-				state = "pause";
+				state = 'p';
 			}
 		}
 	}
