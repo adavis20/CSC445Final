@@ -1,113 +1,181 @@
 package com.mygdx.sss;
 
-import Entity.Bird;
-import Entity.EntityManager;
-import Entity.Player;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-public class ScrollingShooter extends ApplicationAdapter {
+import entity.Bird;
+import entity.EntityManager;
+import entity.Player;
+
+public class ScrollingShooter extends ApplicationAdapter
+{
 	SpriteBatch sb;
 	ShapeRenderer sr;
 	Map map;
 	Player p;
 	Bird b;
-        EntityManager em;
+	EntityManager em;
+	
 	@Override
-	public void create () {
+	public void create()
+	{
 		sb = new SpriteBatch();
 		sr = new ShapeRenderer();
 		sr.setAutoShapeType(true);
 		map = new Map("map1");
-                Vector2 pos = new Vector2(50,200);
-                Vector2 direction = new Vector2(0,0);
-		p = new Player(pos,direction);
-                pos = new Vector2(100,400);
-                direction = new Vector2();
-                em = new EntityManager(p);
-               // b = new Bird(pos,direction,p);
+		Vector2 pos = new Vector2(50, 200);
+		Vector2 direction = new Vector2(0, 0);
+		p = new Player(pos, direction);
+		pos = new Vector2(100, 400);
+		direction = new Vector2();
+		em = new EntityManager(p);
+		// b = new Bird(pos,direction,p);
 	}
-
+	
 	@Override
-	public void render () {
+	public void render()
+	{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		checkInputs();
+		checkPlayer();
 		p.update();
-                em.update();
+		em.update();
 		sb.begin();
 		sb.draw(new Texture(Gdx.files.internal("sprites/sky.png")), 0, 0, 1300, 600);
-		checkPlayer();
 		map.draw(sb);
 		sb.end();
 		sr.begin(ShapeRenderer.ShapeType.Filled);
 		p.draw(sr);
-                em.renderBirds(sr);
+		em.renderBirds(sr);
 		sr.end();
 	}
 	
 	private void checkPlayer()
 	{
-		//Move map to follow player
-		if(p.getPos().x < 200)
+		// Move map to follow player
+		if (p.pos.x < 200)
 		{
-			if(map.offset < 0)
+			if (map.offset < 0)
 			{
-				p.getPos().x = 200;
+				p.pos.x = 200;
 				map.offset += 10;
 			}
 		}
-		else if(p.getPos().x > 1100)
+		else if (p.pos.x > 1100)
 		{
-			if(map.offset > -2150)
+			if (map.offset > -2150)
 			{
-				p.getPos().x = 1100;
+				p.pos.x = 1100;
 				map.offset -= 10;
 			}
 		}
-		//Check bounds
-		if(p.getPos().x < 50)
-			p.getPos().x = 50;
-		if(p.getPos().x > 1200)
-			p.getPos().x = 1200;
-		//Check Collision (Basic)
-		for(int x = 0; x < 12; x++)
+		// Check bounds
+		if (p.pos.x < 50)
+			p.pos.x = 50;
+		if (p.pos.x > 1200)
+			p.pos.x = 1200;
+		if (p.pos.y > 550)
+			p.pos.y = 550;
+		if (p.pos.y < 50)
+			p.pos.y = 50;
+		// Check Collision (Basic)
+		for (int x = 0; x < 12; x++)
 		{
-			for(int y = 0; y < map.columns; y++)
+			for (int y = 0; y < map.columns; y++)
 			{
 				MapPiece target = map.map[x][y];
-				if(p.getPos().y < ((target.y*50)+MapPiece.TILESIZE) && target.type == '1'
-						&& (p.getPos().x + 25) < (target.x*50)+MapPiece.TILESIZE
-						&& (p.getPos().x + 25) > (target.x*50))
+				switch (target.type)
 				{
-					p.getPos().y = ((target.y*50)+MapPiece.TILESIZE);
+					case '1':
+					{
+						if (p.pos.y < ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE)
+								&& (p.pos.x + (15)) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
+								&& (p.pos.x + (15)) > (target.x * MapPiece.TILESIZE + map.offset))
+						{
+							p.pos.y = ((target.y * 50) + MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+					}
+					case '2':
+					{
+						if (p.pos.y < ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE)
+								&& p.pos.y > ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE - 15)
+								&& (p.pos.x) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
+								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE + map.offset))
+						{
+							p.pos.y = ((target.y * 50) + MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+						else if (p.pos.y + MapPiece.TILESIZE > ((target.y * MapPiece.TILESIZE))
+								&& p.pos.y + MapPiece.TILESIZE < ((target.y * MapPiece.TILESIZE) + 15)
+								&& (p.pos.x) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
+								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE + map.offset))
+						{
+							p.pos.y = ((target.y * 50) - MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+						if (p.pos.x + MapPiece.TILESIZE > ((target.x * MapPiece.TILESIZE) + map.offset)
+								&& p.pos.x + MapPiece.TILESIZE < ((target.x * MapPiece.TILESIZE) + 15 + map.offset)
+								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
+						{
+							p.pos.x = (target.x * MapPiece.TILESIZE) - MapPiece.TILESIZE + map.offset;
+							p.jumping = false;
+						}
+						else if (p.pos.x < ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE)
+								&& p.pos.x > ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE - 15)
+								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
+						{
+							p.pos.x = ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE) + map.offset;
+							p.jumping = false;
+						}
+					}
 				}
+				
 			}
 		}
 	}
-
-//	public void checkInputs()
-//	{
-//		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-//		{
-//			p.x -= 10;
-//		}
-//		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-//		{
-//			p.x += 10;
-//		}
-//		if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-//		{
-//			p.y -= 10;
-//		}
-//		if(Gdx.input.isKeyPressed(Input.Keys.UP))
-//		{
-//			p.y += 10;
-//		}
-//	}
+	
+	public void checkInputs()
+	{
+		// Horizontal Movement
+		if (Gdx.input.isKeyPressed(Keys.LEFT))
+		{
+			p.accel.x = -2;
+		}
+		else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+		{
+			p.accel.x = 2;
+		}
+		else
+		{
+			p.accel.x = 0;
+		}
+		// Vertical Movement
+		if (Gdx.input.isKeyPressed(Keys.DOWN))
+		{
+			p.accel.y = -5;
+		}
+		// Jumping Controls
+		if (Gdx.input.isKeyJustPressed(Keys.UP))
+		{
+			if (!p.jumping)
+			{
+				p.jumping = true;
+				p.accel.y = 20;
+			}
+		}
+		// Shooting Controls
+		p.setDirection(Gdx.input.getX(), 600 - Gdx.input.getY());
+		if (Gdx.input.justTouched())
+			p.shoot();
+	}
 }

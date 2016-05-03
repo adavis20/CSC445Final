@@ -23,19 +23,19 @@ public class MapPiece
 	private Texture getSprite(char type)
 	{
 		Texture t;
-		if(type ==  '0')
+		if (type == '0')
 		{
 			t = null;
 		}
-		else if(type ==  '1')
+		else if (type == '1')
 		{
 			t = new Texture(Gdx.files.internal("sprites/floorTop.png"));
 		}
-		else if(type ==  '2')
+		else if (type == '2')
 		{
 			t = new Texture(Gdx.files.internal("sprites/brick.png"));
 		}
-		else if(type ==  '3')
+		else if (type == '3')
 		{
 			t = new Texture(Gdx.files.internal("sprites/floorBottom.png"));
 		}
@@ -45,10 +45,10 @@ public class MapPiece
 		}
 		return t;
 	}
-
+	
 	public void draw(SpriteBatch sb, int offset)
 	{
-		if(texture != null)
-			sb.draw(texture, x*TILESIZE + offset, y*TILESIZE, TILESIZE, TILESIZE);
+		if (texture != null)
+			sb.draw(texture, x * TILESIZE + offset, y * TILESIZE, TILESIZE, TILESIZE);
 	}
 }
