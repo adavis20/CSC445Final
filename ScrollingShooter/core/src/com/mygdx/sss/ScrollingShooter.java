@@ -83,6 +83,7 @@ public class ScrollingShooter extends ApplicationAdapter
 				p.draw(sr);
 				em.renderBirds(sr);
 				sr.end();
+                                 System.out.println(em.getScore());
 				break;
 			}
 			default:

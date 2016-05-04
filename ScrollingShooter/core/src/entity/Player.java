@@ -6,7 +6,10 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import java.util.Random;
 
 public class Player extends Entity implements Steerable<Vector2>
 {
@@ -16,8 +19,9 @@ public class Player extends Entity implements Steerable<Vector2>
 	public Vector2 accel;
 	int health;
 	public boolean jumping;
-	public ArrayList<Bullet> bullets;
-	
+        Random rand = new Random();
+	public Array<Bullet> bullets;
+	Array<Bullet> toRemove = new Array<Bullet>();
 	//Junk
 	float orientation;
 	float angularVelocity;
@@ -44,7 +48,7 @@ public class Player extends Entity implements Steerable<Vector2>
 		accel = new Vector2(0, 0);
 		direction = new Vector2(0, 0);
 		jumping = false;
-		bullets = new ArrayList<Bullet>();
+		bullets = new Array<Bullet>();
 		health = 100;
 	}
 	
@@ -71,25 +75,20 @@ public class Player extends Entity implements Steerable<Vector2>
 		vel.add(tempAccel);
 		truncate(vel, MAX_VEL);
 		pos.add(vel);
-		
-		
-		 System.out.println("Player pos: " + pos.x + ", " + pos.y);
-		 System.out.println("Player vel: " + vel.x + ", " + vel.y);
-		 System.out.println("Player accel: " + accel.x + ", " + accel.y);
-		 System.out.println("Player jumping: " + jumping);
 		 
 		
 		// Bullets tick
-		ArrayList<Bullet> toRemove = new ArrayList<Bullet>();
 		for (Bullet b : bullets)
 		{
 			b.update();
+                        
 			if (b.pos.x > 1300 || b.pos.x < 0 || b.pos.y < 0 || b.pos.y > 600)
 			{
 				toRemove.add(b);
 			}
 		}
-		bullets.removeAll(toRemove);
+		bullets.removeAll(toRemove,false);
+                toRemove.clear();
 	}
 	
 	public void truncate(Vector2 v, int i)
@@ -126,9 +125,9 @@ public class Player extends Entity implements Steerable<Vector2>
 	
 	public void shoot()
 	{
-		if (bullets.size() < MAX_BULLETS)
+		if (bullets.size < MAX_BULLETS)
 		{
-			bullets.add(new Bullet(this.pos.cpy().add(25, 25), this.direction.cpy().scl(10, 10)));
+			bullets.add(new Bullet(this.pos.cpy().add(25, 25), this.direction.cpy().scl(20, 20)));
 		}
 	}
 	
@@ -203,46 +202,20 @@ public class Player extends Entity implements Steerable<Vector2>
 	@Override
 	public Location newLocation()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); // To
-																		// change
-																		// body
-																		// of
-																		// generated
-																		// methods,
-																		// choose
-																		// Tools
-																		// |
-																		// Templates.
+            Vector2 copy = pos.cpy();
+		return new Player(copy,new Vector2());
 	}
 	
 	@Override
 	public float getZeroLinearSpeedThreshold()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); // To
-																		// change
-																		// body
-																		// of
-																		// generated
-																		// methods,
-																		// choose
-																		// Tools
-																		// |
-																		// Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 	
 	@Override
 	public void setZeroLinearSpeedThreshold(float value)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); // To
-																		// change
-																		// body
-																		// of
-																		// generated
-																		// methods,
-																		// choose
-																		// Tools
-																		// |
-																		// Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 	
 	@Override
@@ -301,4 +274,9 @@ public class Player extends Entity implements Steerable<Vector2>
 		}
 		return character.vectorToAngle(character.getLinearVelocity());
 	}
+
+    @Override
+    public Rectangle getBounds() {
+       return new Rectangle(pos.x,pos.y,50,50);
+    }
 }

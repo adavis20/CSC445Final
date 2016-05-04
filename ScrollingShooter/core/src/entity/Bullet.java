@@ -2,6 +2,7 @@ package entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Bullet extends Entity
@@ -28,4 +29,9 @@ public class Bullet extends Entity
 	{
 		this.pos.add(this.vel);
 	}
+
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(pos.x,pos.y,5,5);
+    }
 }

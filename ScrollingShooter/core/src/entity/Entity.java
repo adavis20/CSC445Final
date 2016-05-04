@@ -36,10 +36,7 @@ public abstract class Entity
 		sb.draw(texture, pos.x, pos.y);
 	}
 	
-	public Rectangle getBounds()
-	{
-		return new Rectangle(pos.x, pos.y, 85, 210);// y 212
-	}
+	public abstract Rectangle getBounds();
 	
 	public void setDirection(float x, float y)
 	{
