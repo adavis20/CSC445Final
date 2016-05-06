@@ -1,6 +1,5 @@
 package entity;
 
-import java.util.ArrayList;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;

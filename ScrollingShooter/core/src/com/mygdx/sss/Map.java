@@ -13,13 +13,11 @@ public class Map
 	MapPiece[][] map;
 	String name;
 	int columns;
-	public int offset;
 	
 	public Map(String fileName)
 	{
 		name = fileName;
 		columns = 0;
-		offset = 0;
 		map = produceMap(Gdx.files.internal("maps\\" + name + ".map"));
 	}
 	
@@ -29,7 +27,7 @@ public class Map
 		{
 			for (int y = 0; y < columns; y++)
 			{
-				map[x][y].draw(sb, offset);
+				map[x][y].draw(sb);
 			}
 		}
 	}

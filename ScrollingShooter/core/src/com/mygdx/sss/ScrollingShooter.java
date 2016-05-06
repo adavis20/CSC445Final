@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +21,7 @@ public class ScrollingShooter extends ApplicationAdapter
 	SpriteBatch sb;
 	ShapeRenderer sr;
 	BitmapFont bf;
+	OrthographicCamera camera;
 	Map map;
 	Player p;
 	Bird b;
@@ -34,6 +36,9 @@ public class ScrollingShooter extends ApplicationAdapter
 		sr = new ShapeRenderer();
 		bf = new BitmapFont();
 		sr.setAutoShapeType(true);
+		camera = new OrthographicCamera(1300,600);
+		camera.position.set(0, 0, 0);
+		camera.update();
 		map = new Map("map1");
 		Vector2 pos = new Vector2(50, 200);
 		Vector2 direction = new Vector2(0, 0);
@@ -83,7 +88,10 @@ public class ScrollingShooter extends ApplicationAdapter
 				p.draw(sr);
 				em.renderBirds(sr);
 				sr.end();
-                                 System.out.println(em.getScore());
+				
+				camera.position.set(p.pos.x, 0, 0);
+				camera.update();
+                //System.out.println(em.getScore());
 				break;
 			}
 			default:
@@ -96,7 +104,7 @@ public class ScrollingShooter extends ApplicationAdapter
 	private void checkPlayer()
 	{
 		// Move map to follow player
-		if (p.pos.x < 200)
+		/*if (p.pos.x < 200)
 		{
 			if (map.offset < 0)
 			{
@@ -111,16 +119,7 @@ public class ScrollingShooter extends ApplicationAdapter
 				p.pos.x = 1100;
 				map.offset -= 10;
 			}
-		}
-		// Check bounds
-		if (p.pos.x < 50)
-			p.pos.x = 50;
-		if (p.pos.x > 1200)
-			p.pos.x = 1200;
-		if (p.pos.y > 550)
-			p.pos.y = 550;
-		if (p.pos.y < 50)
-			p.pos.y = 50;
+		}*/
 		// Check Collision (Basic)
 		for (int x = 0; x < 12; x++)
 		{
@@ -132,8 +131,8 @@ public class ScrollingShooter extends ApplicationAdapter
 					case '1':
 					{
 						if (p.pos.y < ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE)
-								&& (p.pos.x + (15)) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
-								&& (p.pos.x + (15)) > (target.x * MapPiece.TILESIZE + map.offset))
+								&& (p.pos.x + (15)) < (target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.x + (15)) > (target.x * MapPiece.TILESIZE))
 						{
 							p.pos.y = ((target.y * 50) + MapPiece.TILESIZE);
 							p.jumping = false;
@@ -143,34 +142,69 @@ public class ScrollingShooter extends ApplicationAdapter
 					{
 						if (p.pos.y < ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE)
 								&& p.pos.y > ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE - 15)
-								&& (p.pos.x) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
-								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE + map.offset))
+								&& (p.pos.x) < (target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE))
 						{
 							p.pos.y = ((target.y * 50) + MapPiece.TILESIZE);
 							p.jumping = false;
 						}
 						else if (p.pos.y + MapPiece.TILESIZE > ((target.y * MapPiece.TILESIZE))
 								&& p.pos.y + MapPiece.TILESIZE < ((target.y * MapPiece.TILESIZE) + 15)
-								&& (p.pos.x) < (target.x * MapPiece.TILESIZE + map.offset) + MapPiece.TILESIZE
-								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE + map.offset))
+								&& (p.pos.x) < (target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE))
 						{
 							p.pos.y = ((target.y * 50) - MapPiece.TILESIZE);
 							p.jumping = false;
 						}
-						if (p.pos.x + MapPiece.TILESIZE > ((target.x * MapPiece.TILESIZE) + map.offset)
-								&& p.pos.x + MapPiece.TILESIZE < ((target.x * MapPiece.TILESIZE) + 15 + map.offset)
+						if (p.pos.x + MapPiece.TILESIZE > ((target.x * MapPiece.TILESIZE))
+								&& p.pos.x + MapPiece.TILESIZE < ((target.x * MapPiece.TILESIZE) + 15)
 								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
 								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
 						{
-							p.pos.x = (target.x * MapPiece.TILESIZE) - MapPiece.TILESIZE + map.offset;
+							p.pos.x = (target.x * MapPiece.TILESIZE) - MapPiece.TILESIZE;
 							p.jumping = false;
 						}
-						else if (p.pos.x < ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE)
-								&& p.pos.x > ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE - 15)
+						else if (p.pos.x < ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE)
+								&& p.pos.x > ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE - 15)
 								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
 								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
 						{
-							p.pos.x = ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE) + map.offset;
+							p.pos.x = ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+					}
+					case '3':
+					{
+						if (p.pos.y < ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE)
+								&& p.pos.y > ((target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE - 15)
+								&& (p.pos.x + 10) < (target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.x - 10 + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE))
+						{
+							p.pos.y = ((target.y * 50) + MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+						else if (p.pos.y + MapPiece.TILESIZE > ((target.y * MapPiece.TILESIZE))
+								&& p.pos.y + MapPiece.TILESIZE < ((target.y * MapPiece.TILESIZE) + 15)
+								&& (p.pos.x + 10) < (target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.x - 10 + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE))
+						{
+							p.pos.y = ((target.y * 50) - MapPiece.TILESIZE);
+							p.jumping = false;
+						}
+						if (p.pos.x + MapPiece.TILESIZE > ((target.x * MapPiece.TILESIZE))
+								&& p.pos.x + MapPiece.TILESIZE < ((target.x * MapPiece.TILESIZE) + 15)
+								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
+						{
+							p.pos.x = (target.x * MapPiece.TILESIZE) - MapPiece.TILESIZE;
+							p.jumping = false;
+						}
+						else if (p.pos.x < ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE)
+								&& p.pos.x > ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE - 15)
+								&& (p.pos.y + (15)) < (target.y * MapPiece.TILESIZE) + MapPiece.TILESIZE
+								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
+						{
+							p.pos.x = ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE);
 							p.jumping = false;
 						}
 					}

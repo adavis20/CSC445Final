@@ -46,9 +46,9 @@ public class MapPiece
 		return t;
 	}
 	
-	public void draw(SpriteBatch sb, int offset)
+	public void draw(SpriteBatch sb)
 	{
 		if (texture != null)
-			sb.draw(texture, x * TILESIZE + offset, y * TILESIZE, TILESIZE, TILESIZE);
+			sb.draw(texture, x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE);
 	}
 }
