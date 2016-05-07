@@ -17,7 +17,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	public Vector2 pos;
 	public Vector2 vel;
 	public Vector2 accel;
-	int health;
+	public int health;
 	public boolean jumping;
         Random rand = new Random();
 	public Array<Bullet> bullets;
@@ -203,7 +203,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	public Location newLocation()
 	{
             Vector2 copy = pos.cpy();
-		return new Player(copy,new Vector2());
+		return new Player(copy.add(rand.nextInt(50), rand.nextInt(90)),new Vector2());
 	}
 	
 	@Override

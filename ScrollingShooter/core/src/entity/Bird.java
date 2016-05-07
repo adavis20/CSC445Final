@@ -42,6 +42,7 @@ public class Bird extends Entity implements Steerable<Vector2> {
     double DEGREES_TO_RADIANS = (double) (Math.PI / 180);
     boolean independentFacing;
     int displace;
+    int dealDMG = 0;
     Seek<Vector2> SB;
 
     public Bird(Vector2 pos, Vector2 direction, Player p, int displace) {
@@ -54,13 +55,19 @@ public class Bird extends Entity implements Steerable<Vector2> {
         position = pos;
         this.displace = displace;
         this.p = p;
-        SB = new Seek<Vector2>(this, p);
+        SB = new Seek<Vector2>(this, p.newLocation());
 
         independentFacing = false;
     }
 
     @Override
     public void update() {
+        if(dealDMG != 0){
+            dealDMG++;
+        } if(dealDMG == 5){
+            dealDMG = 0;
+        }
+        SB.setTarget(p.newLocation());
         SB.calculateSteering(SA);
         applySteering(SA, 10);
     }

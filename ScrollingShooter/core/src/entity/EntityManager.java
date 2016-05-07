@@ -7,6 +7,7 @@ package entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import java.util.Random;
@@ -93,21 +94,26 @@ public class EntityManager
                             if(e.getBounds().overlaps(b.getBounds())){
                                 birdsToRemove.add(e);
                                 bulletsToRemove.add(b);
+                               
                             }
+                        }
+                        if(e.getBounds().overlaps(player.getBounds()) && e.dealDMG == 0){
+                            e.dealDMG++;
+                            player.health = player.health - 1;
                         }
 		}
                 removeBirds();
-                adjust.addAll(entities);
-                adjustBirds();
+               // adjust.addAll(entities);
+              //  adjustBirds();
 	}
 	private void adjustBirds(){
             for(Bird e: entities){
                 for(Bird f: adjust){
                     if(!f.equals(e)){
-                        if(e.getBounds().overlaps(f.getBounds())){
-                           //Adjust bird out of the the way
-                           
-                            }
+//                        if(e.getBounds().overlaps(f.getBounds())){
+//                           //Adjust bird out of the the way
+//                           f.pos.add(rand., 0);
+//                            }
                     }
                 }
             }
