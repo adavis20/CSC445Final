@@ -8,11 +8,10 @@ package entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -44,8 +43,10 @@ public class Bird extends Entity implements Steerable<Vector2> {
     int displace;
     int dealDMG = 0;
     Seek<Vector2> SB;
+    Texture texture;
 
-    public Bird(Vector2 pos, Vector2 direction, Player p, int displace) {
+    @SuppressWarnings("unchecked")
+	public Bird(Vector2 pos, Vector2 direction, Player p, int displace) {
         super(pos, direction);
         maxLinearSpeed = 0.3f;
         maxLinearAcceleration = 1;
@@ -56,11 +57,12 @@ public class Bird extends Entity implements Steerable<Vector2> {
         this.displace = displace;
         this.p = p;
         SB = new Seek<Vector2>(this, p.newLocation());
-
         independentFacing = false;
+        texture = getSprite();
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void update() {
         if(dealDMG != 0){
             dealDMG++;
@@ -72,9 +74,39 @@ public class Bird extends Entity implements Steerable<Vector2> {
         applySteering(SA, 10);
     }
 
-    public void draw(ShapeRenderer sr) {
-        sr.setColor(Color.GOLD);
-        sr.rect(pos.x, pos.y, 20, 20);
+    public void draw(SpriteBatch sb)
+    {
+		if (texture != null)
+			sb.draw(texture, this.position.x, this.position.y, 50, 50);
+    }
+    
+    private Texture getSprite()
+    {
+		int CASE = (int)(Math.random()*4);
+    	switch(CASE)
+    	{
+    		case 1:
+    		{
+    	    	return (new Texture(Gdx.files.internal("sprites/bird1.png")));
+    		}
+    		case 2:
+    		{
+    	    	return (new Texture(Gdx.files.internal("sprites/bird2.png")));
+    		}
+    		case 3:
+    		{
+    	    	return (new Texture(Gdx.files.internal("sprites/bird3.png")));
+    		}
+    		case 4:
+    		{
+    	    	return (new Texture(Gdx.files.internal("sprites/bird4.png")));
+    		}
+
+    		default:
+    		{
+    	    	return (new Texture(Gdx.files.internal("sprites/bird1.png")));
+    		}
+    	}
     }
 
     private void applySteering(SteeringAcceleration<Vector2> steering, float time) {
@@ -215,6 +247,6 @@ public class Bird extends Entity implements Steerable<Vector2> {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(pos.x, pos.y, 20, 20);
+        return new Rectangle(pos.x, pos.y, 45, 45);
     }
 }

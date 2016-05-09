@@ -25,6 +25,8 @@ public class ScrollingShooter extends ApplicationAdapter
 	Bird b;
 	EntityManager em;
 	
+	boolean boss = false;
+	
 	public char state = 's';
 	
 	@Override
@@ -41,6 +43,7 @@ public class ScrollingShooter extends ApplicationAdapter
 		pos = new Vector2(100, 400);
 		direction = new Vector2();
 		em = new EntityManager(p);
+		boss = false;
 	}
 	
 	@Override
@@ -73,18 +76,29 @@ public class ScrollingShooter extends ApplicationAdapter
 				em.update();
 				//Checks
 				checkPlayer();
+				if(em.bossKilled)
+				{
+					state = 's';
+					gameRestart();
+				}
 				//Sprite Batch
 				sb.begin();
 				sb.draw(new Texture(Gdx.files.internal("sprites/sky.png")), 0, 0, 1300, 600);
 				map.draw(sb);
+				p.draw(sb);
+				em.renderBirds(sb);
+				bf.setColor(Color.GOLD);
+				bf.draw(sb, "Health: " + p.health, 30, 30);
+				bf.draw(sb, "Score: " + em.getScore(), 120, 30);
+				if(em.bossSpawned)
+				{
+					bf.draw(sb, "Boss Health: " + em.getBoss().health, 200, 30);
+				}
 				sb.end();
 				//Shape Renderer
 				sr.begin(ShapeRenderer.ShapeType.Filled);
 				p.draw(sr);
-				em.renderBirds(sr);
 				sr.end();
-                                 System.out.println("Score: " + em.getScore());
-                                 System.out.println("Player Health: " + p.health);
 				break;
 			}
 			default:
@@ -96,21 +110,50 @@ public class ScrollingShooter extends ApplicationAdapter
 	
 	private void checkPlayer()
 	{
-		// Move map to follow player
-		if (p.pos.x < 200)
+		//Check health
+		if(p.health <= 0)
 		{
-			if (map.offset < 0)
+			state = 's';
+			//restart
+			gameRestart();
+		}
+		// Move map to follow player
+		if(!em.bossSpawned)
+		{
+			if (p.pos.x < 200)
 			{
-				p.pos.x = 200;
-				map.offset += 10;
+				if (map.offset < 0)
+				{
+					p.pos.x = 200;
+					map.offset += 10;
+				}
+			}
+			else if (p.pos.x > 1100)
+			{
+				if (map.offset > -2150)
+				{
+					p.pos.x = 1100;
+					map.offset -= 10;
+				}
 			}
 		}
-		else if (p.pos.x > 1100)
+		else
 		{
-			if (map.offset > -2150)
+			if (p.pos.x < 500)
 			{
-				p.pos.x = 1100;
-				map.offset -= 10;
+				if (map.offset < 0)
+				{
+					p.pos.x = 500;
+					map.offset += 10;
+				}
+			}
+			else if (p.pos.x > 1100)
+			{
+				if (map.offset > -2150)
+				{
+					p.pos.x = 1100;
+					map.offset -= 10;
+				}
 			}
 		}
 		// Check bounds
@@ -181,14 +224,24 @@ public class ScrollingShooter extends ApplicationAdapter
 		}
 	}
 	
+	public void gameRestart()
+	{
+		map = new Map("map1");
+		Vector2 pos = new Vector2(50, 200);
+		Vector2 direction = new Vector2(0, 0);
+		p = new Player(pos, direction);
+		em = new EntityManager(p);
+		boss = false;
+	}
+	
 	public void checkInputs()
 	{
 		// Horizontal Movement
-		if (Gdx.input.isKeyPressed(Keys.LEFT))
+		if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A))
 		{
 			p.accel.x = -2;
 		}
-		else if (Gdx.input.isKeyPressed(Keys.RIGHT))
+		else if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D))
 		{
 			p.accel.x = 2;
 		}
@@ -196,13 +249,8 @@ public class ScrollingShooter extends ApplicationAdapter
 		{
 			p.accel.x = 0;
 		}
-		// Vertical Movement
-		if (Gdx.input.isKeyPressed(Keys.DOWN))
-		{
-			p.accel.y = -5;
-		}
 		// Jumping Controls
-		if (Gdx.input.isKeyJustPressed(Keys.UP))
+		if (Gdx.input.isKeyJustPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W)  || Gdx.input.isKeyPressed(Keys.SPACE))
 		{
 			if (!p.jumping)
 			{
@@ -223,7 +271,7 @@ public class ScrollingShooter extends ApplicationAdapter
 			}
 			else if(state == 'g')
 			{
-				state = 'p';
+				state = 's';
 			}
 		}
 	}

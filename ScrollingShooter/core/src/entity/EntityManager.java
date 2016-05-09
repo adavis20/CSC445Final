@@ -6,8 +6,7 @@
 package entity;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import java.util.Random;
@@ -21,118 +20,179 @@ public class EntityManager
 	
 	private final int MAX_ENEMIES = 60;
 	private final Array<Bird> entities = new Array<Bird>();
-        private final Array<Bird> adjust = new Array<Bird>();
-        private final Array<Bird> birdsToRemove = new Array<Bird>();
-        private final Array<Bullet> bulletsToRemove = new Array<Bullet>();
+	private final Array<Bird> birdsToRemove = new Array<Bird>();
+	private final Array<Bullet> bulletsToRemove = new Array<Bullet>();
 	Random rand;
 	private final Player player;
 	private int spawnCap;
-        private int MAX_ALLOWED_BIRDS = 5;
-        private int score = 0;
-        private int increaseDifficulty = 5000;
+	private int MAX_ALLOWED_BIRDS = 5;
+	private int score = 0;
+	private int increaseDifficulty = 5000;
+	public boolean bossSpawned = false;
+	public boolean bossKilled = false;
+	private Boss boss;
 	
 	public EntityManager(Player p)
 	{
 		player = p;
 		rand = new Random();
 		spawnCap = 3;
+		score = 0;
+		bossKilled = false;
+		bossSpawned = false;
 	}
 	
 	public void update()
 	{
 		createBirds();
 		updateBirds();
+		
+		if(bossSpawned)
+		{
+			boss.player = player;
+			updateBoss();
+
+			if(boss.health <= 0)
+			{
+				boss = null;
+				bossSpawned = false;
+				bossKilled = true;
+			}
+		}
+	}
+	private void updateBoss()
+	{
+		if(boss != null)
+			boss.update();
+		
+		for (Bullet b : player.bullets)
+		{
+			if (boss != null && boss.getBounds().overlaps(b.getBounds()))
+			{
+				boss.health--;
+				bulletsToRemove.add(b);
+			}
+		}
+		if (boss != null && boss.getBounds().overlaps(player.getBounds()))
+		{
+			player.health--;
+		}
+		
+
+		for (BirdBullet b : boss.bullets)
+		{
+			if (player.getBounds().overlaps(b.getBounds()))
+			{
+				player.health-=3;
+				bulletsToRemove.add(b);
+				
+			}
+		}
 	}
 	
 	private void createBirds()
 	{
-            if(score == increaseDifficulty){
-                increaseDifficulty = increaseDifficulty + 5000;
-                spawnCap = spawnCap + 2;
-                MAX_ALLOWED_BIRDS = MAX_ALLOWED_BIRDS + 2;
-            }
+		if(score >= 15000 && !bossSpawned)
+		{
+			boss = new Boss(new Vector2(10,10), new Vector2());
+			bossSpawned = true;
+		}
+		if (score == increaseDifficulty)
+		{
+			increaseDifficulty = increaseDifficulty + 5000;
+			spawnCap = spawnCap + 2;
+			MAX_ALLOWED_BIRDS = MAX_ALLOWED_BIRDS + 2;
+		}
 		if (entities.size < MAX_ENEMIES && entities.size < MAX_ALLOWED_BIRDS)
 		{
 			int spawnNum = rand.nextInt(spawnCap);
-			for (int i = 0; i < spawnNum && entities.size < MAX_ALLOWED_BIRDS ; i++)
+			for (int i = 0; i < spawnNum && entities.size < MAX_ALLOWED_BIRDS; i++)
 			{
-				int CASE = rand.nextInt(3);
+				int CASE = (int)(Math.random()*4);
 				switch (CASE)
 				{
 					case 0:
 					{
-						Vector2 pos = new Vector2(-10, rand.nextInt(Gdx.graphics.getHeight()/2)+Gdx.graphics.getHeight()/2);
-						Bird b = new Bird(pos, new Vector2(), player,CASE);
+						Vector2 pos = new Vector2(-10,
+								rand.nextInt(Gdx.graphics.getHeight() / 2) + Gdx.graphics.getHeight() / 2);
+						Bird b = new Bird(pos, new Vector2(), player, CASE);
 						entities.add(b);
 						break;
 					}
 					case 1:
 					{
 						Vector2 pos = new Vector2(rand.nextInt(Gdx.graphics.getWidth()), Gdx.graphics.getHeight() + 10);
-						Bird b = new Bird(pos, new Vector2(), player,CASE);
+						Bird b = new Bird(pos, new Vector2(), player, CASE);
 						entities.add(b);
 						break;
 					}
 					default:
 					{
-						Vector2 pos = new Vector2(Gdx.graphics.getWidth() + 10, rand.nextInt(Gdx.graphics.getHeight()/2)+Gdx.graphics.getHeight()/2);
-						Bird b = new Bird(pos, new Vector2(), player,CASE);
+						Vector2 pos = new Vector2(Gdx.graphics.getWidth() + 10,
+								rand.nextInt(Gdx.graphics.getHeight() / 2) + Gdx.graphics.getHeight() / 2);
+						Bird b = new Bird(pos, new Vector2(), player, CASE);
 						entities.add(b);
 						break;
 					}
 				}
 			}
-		}            
+		}
 	}
 	
+
 	private void updateBirds()
 	{
 		for (Bird e : entities)
 		{
 			e.update();
-                        for(Bullet b: player.bullets){
-                            if(e.getBounds().overlaps(b.getBounds())){
-                                birdsToRemove.add(e);
-                                bulletsToRemove.add(b);
-                               
-                            }
-                        }
-                        if(e.getBounds().overlaps(player.getBounds()) && e.dealDMG == 0){
-                            e.dealDMG++;
-                            player.health = player.health - 1;
-                        }
+			for (Bullet b : player.bullets)
+			{
+				if (e.getBounds().overlaps(b.getBounds()))
+				{
+					birdsToRemove.add(e);
+					bulletsToRemove.add(b);
+					
+				}
+			}
+			if (e.getBounds().overlaps(player.getBounds()) && e.dealDMG == 0)
+			{
+				e.dealDMG++;
+				player.health = player.health - 1;
+			}
 		}
-                removeBirds();
-               // adjust.addAll(entities);
-              //  adjustBirds();
+		removeBirds();
 	}
-	private void adjustBirds(){
-            for(Bird e: entities){
-                for(Bird f: adjust){
-                    if(!f.equals(e)){
-//                        if(e.getBounds().overlaps(f.getBounds())){
-//                           //Adjust bird out of the the way
-//                           f.pos.add(rand., 0);
-//                            }
-                    }
-                }
-            }
-            adjust.clear();
-        }
-	public void renderBirds(ShapeRenderer sr)
+	
+	public void renderBirds(SpriteBatch sb)
 	{
 		for (Bird e : entities)
 		{
-			e.draw(sr);
+			e.draw(sb);
 		}
+		if(bossSpawned)
+			boss.draw(sb);
 	}
-        private void removeBirds(){
-            score = score + (birdsToRemove.size * 100);
-            entities.removeAll(birdsToRemove,false);
-            player.bullets.removeAll(bulletsToRemove,false);
-            birdsToRemove.clear();
-        }
-        public int getScore(){
-            return score;
-        }
+	
+	private void removeBirds()
+	{
+		score = score + (birdsToRemove.size * 100);
+		entities.removeAll(birdsToRemove, false);
+		player.bullets.removeAll(bulletsToRemove, false);
+		birdsToRemove.clear();
+	}
+	
+	public int getScore()
+	{
+		return score;
+	}
+
+	public Boss getBoss()
+	{
+		return boss;
+	}
+
+	public void setBoss(Boss boss)
+	{
+		this.boss = boss;
+	}
 }

@@ -1,9 +1,11 @@
 package entity;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -13,16 +15,16 @@ import java.util.Random;
 
 public class Player extends Entity implements Steerable<Vector2>
 {
-	//Necessary
+	// Necessary
 	public Vector2 pos;
 	public Vector2 vel;
 	public Vector2 accel;
 	public int health;
 	public boolean jumping;
-        Random rand = new Random();
+	Random rand = new Random();
 	public Array<Bullet> bullets;
 	Array<Bullet> toRemove = new Array<Bullet>();
-	//Junk
+	// Junk
 	float orientation;
 	float angularVelocity;
 	boolean tagged;
@@ -34,7 +36,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	double DEGREES_TO_RADIANS = (double) (Math.PI / 180);
 	boolean independentFacing;
 	
-	//Constants
+	// Constants
 	public static final int MAX_ACCEL = 10;
 	public static final int MAX_VEL = 10;
 	public static final int MAX_BULLETS = 20;
@@ -75,20 +77,19 @@ public class Player extends Entity implements Steerable<Vector2>
 		vel.add(tempAccel);
 		truncate(vel, MAX_VEL);
 		pos.add(vel);
-		 
 		
 		// Bullets tick
 		for (Bullet b : bullets)
 		{
 			b.update();
-                        
+			
 			if (b.pos.x > 1300 || b.pos.x < 0 || b.pos.y < 0 || b.pos.y > 600)
 			{
 				toRemove.add(b);
 			}
 		}
-		bullets.removeAll(toRemove,false);
-                toRemove.clear();
+		bullets.removeAll(toRemove, false);
+		toRemove.clear();
 	}
 	
 	public void truncate(Vector2 v, int i)
@@ -107,6 +108,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	{
 		sr.setColor(Color.BLUE);
 		sr.rect(pos.x, pos.y, 50, 50);
+		
 		sr.setColor(Color.YELLOW);
 		sr.rectLine((this.pos.x + 25), (this.pos.y + 25), (this.pos.x + 25) + (direction.x * 40),
 				(this.pos.y + 25) + (direction.y * 40), 2);
@@ -114,6 +116,11 @@ public class Player extends Entity implements Steerable<Vector2>
 		{
 			b.draw(sr);
 		}
+	}
+	
+	public void draw(SpriteBatch sb)
+	{
+		//sb.draw(new Texture(Gdx.files.internal("sprites/player.png")), super.pos.x, super.pos.y, 50, 50);
 	}
 	
 	public void setDirection(int x, int y)
@@ -202,20 +209,20 @@ public class Player extends Entity implements Steerable<Vector2>
 	@Override
 	public Location newLocation()
 	{
-            Vector2 copy = pos.cpy();
-		return new Player(copy.add(rand.nextInt(50), rand.nextInt(90)),new Vector2());
+		Vector2 copy = pos.cpy();
+		return new Player(copy.add((int) (Math.random() * 50), (int) (Math.random() * 50)), new Vector2());
 	}
 	
 	@Override
 	public float getZeroLinearSpeedThreshold()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	@Override
 	public void setZeroLinearSpeedThreshold(float value)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	@Override
@@ -274,9 +281,10 @@ public class Player extends Entity implements Steerable<Vector2>
 		}
 		return character.vectorToAngle(character.getLinearVelocity());
 	}
-
-    @Override
-    public Rectangle getBounds() {
-       return new Rectangle(pos.x,pos.y,50,50);
-    }
+	
+	@Override
+	public Rectangle getBounds()
+	{
+		return new Rectangle(pos.x, pos.y, 50, 50);
+	}
 }
