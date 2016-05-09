@@ -10,6 +10,8 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -44,11 +46,12 @@ public class Bird extends Entity implements Steerable<Vector2> {
     int dealDMG = 0;
     Seek<Vector2> SB;
     Texture texture;
+    Sound sound;
 
     @SuppressWarnings("unchecked")
 	public Bird(Vector2 pos, Vector2 direction, Player p, int displace) {
         super(pos, direction);
-        maxLinearSpeed = 0.3f;
+        maxLinearSpeed = 0.5f;
         maxLinearAcceleration = 1;
         maxAngularSpeed = 1;
         maxAngularAcceleration = 1;
@@ -87,23 +90,33 @@ public class Bird extends Entity implements Steerable<Vector2> {
     	{
     		case 1:
     		{
+                    sound = Gdx.audio.newSound(Gdx.files.internal("one.mp3"));
+                    sound.play(0.1f);
     	    	return (new Texture(Gdx.files.internal("sprites/bird1.png")));
     		}
     		case 2:
     		{
+                     sound = Gdx.audio.newSound(Gdx.files.internal("two.mp3"));
+                     sound.play(0.1f);
     	    	return (new Texture(Gdx.files.internal("sprites/bird2.png")));
     		}
     		case 3:
     		{
+                    sound = Gdx.audio.newSound(Gdx.files.internal("three.mp3"));
+                    sound.play(0.1f);
     	    	return (new Texture(Gdx.files.internal("sprites/bird3.png")));
     		}
     		case 4:
     		{
+                     sound = Gdx.audio.newSound(Gdx.files.internal("four.mp3"));
+                     sound.play(0.1f);
     	    	return (new Texture(Gdx.files.internal("sprites/bird4.png")));
     		}
 
     		default:
     		{
+                    sound = Gdx.audio.newSound(Gdx.files.internal("five.mp3"));
+                    sound.play(0.1f);
     	    	return (new Texture(Gdx.files.internal("sprites/bird1.png")));
     		}
     	}

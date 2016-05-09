@@ -3,6 +3,7 @@ package com.mygdx.sss;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,7 +25,7 @@ public class ScrollingShooter extends ApplicationAdapter
 	Player p;
 	Bird b;
 	EntityManager em;
-	
+	Music music;
 	boolean boss = false;
 	
 	public char state = 's';
@@ -71,6 +72,7 @@ public class ScrollingShooter extends ApplicationAdapter
 			}
 			case 'g':
 			{
+                            
 				//Updates
 				p.update();
 				em.update();
@@ -268,9 +270,12 @@ public class ScrollingShooter extends ApplicationAdapter
 			if(state == 's')
 			{
 				state = 'g';
+                                music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+                                music.play();
 			}
 			else if(state == 'g')
 			{
+                                 music.dispose();
 				state = 's';
 			}
 		}

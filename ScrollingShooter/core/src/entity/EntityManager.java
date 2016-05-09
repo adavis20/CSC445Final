@@ -92,12 +92,14 @@ public class EntityManager
 	
 	private void createBirds()
 	{
-		if(score >= 15000 && !bossSpawned)
+		if(score >= 10000 && !bossSpawned)
 		{
 			boss = new Boss(new Vector2(10,10), new Vector2());
 			bossSpawned = true;
+                        spawnCap = 5;
+                        MAX_ALLOWED_BIRDS = 5;
 		}
-		if (score == increaseDifficulty)
+		if (score >= increaseDifficulty && !bossSpawned)
 		{
 			increaseDifficulty = increaseDifficulty + 5000;
 			spawnCap = spawnCap + 2;
@@ -150,6 +152,7 @@ public class EntityManager
 				if (e.getBounds().overlaps(b.getBounds()))
 				{
 					birdsToRemove.add(e);
+                                        e.sound.dispose();
 					bulletsToRemove.add(b);
 					
 				}
