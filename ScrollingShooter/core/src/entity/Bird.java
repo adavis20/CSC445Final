@@ -62,7 +62,7 @@ public class Bird extends Entity implements Steerable<Vector2> {
         independentFacing = false;
         texture = getSprite();
     }
-
+        
     @SuppressWarnings("unchecked")
 	@Override
     public void update() {
@@ -81,7 +81,9 @@ public class Bird extends Entity implements Steerable<Vector2> {
 		if (texture != null)
 			sb.draw(texture, this.position.x, this.position.y, 50, 50);
     }
-    
+       public void setTexture(Texture t){
+           texture = t;
+       }
     private Texture getSprite()
     {
 		int CASE = (int)(Math.random()*4);

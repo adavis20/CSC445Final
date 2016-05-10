@@ -94,7 +94,7 @@ public class ScrollingShooter extends ApplicationAdapter
 				bf.draw(sb, "Score: " + em.getScore(), 120, 30);
 				if(em.bossSpawned)
 				{
-					bf.draw(sb, "Boss Health: " + em.getBoss().health, 200, 30);
+					bf.draw(sb, "Boss Health: " + em.getBoss().health, 250, 30);
 				}
 				sb.end();
 				//Shape Renderer

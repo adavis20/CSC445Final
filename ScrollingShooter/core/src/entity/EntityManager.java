@@ -6,6 +6,7 @@
 package entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -31,6 +32,7 @@ public class EntityManager
 	public boolean bossSpawned = false;
 	public boolean bossKilled = false;
 	private Boss boss;
+        int sendBird =1500;
 	
 	public EntityManager(Player p)
 	{
@@ -46,7 +48,15 @@ public class EntityManager
 	{
 		createBirds();
 		updateBirds();
-		
+		if(player.health < 50 && score >= sendBird){
+                    Vector2 pos = new Vector2(Gdx.graphics.getWidth() + 10,
+								rand.nextInt(Gdx.graphics.getHeight() / 2) + Gdx.graphics.getHeight() / 2);
+                    Bird b = new Bird(pos, new Vector2(),player,-1);
+                    entities.add(b);
+                    Texture t = new Texture(Gdx.files.internal("sprites/heal.png"));
+                    b.setTexture(t);
+                    sendBird += 1500;
+                }
 		if(bossSpawned)
 		{
 			boss.player = player;
@@ -159,8 +169,13 @@ public class EntityManager
 			}
 			if (e.getBounds().overlaps(player.getBounds()) && e.dealDMG == 0)
 			{
+                            if(e.displace == -1){
+                                player.health = player.health + 25;
+                                birdsToRemove.add(e);
+                            }else{
 				e.dealDMG++;
 				player.health = player.health - 1;
+                            }
 			}
 		}
 		removeBirds();
