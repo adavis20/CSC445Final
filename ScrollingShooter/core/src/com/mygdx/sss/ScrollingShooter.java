@@ -201,7 +201,6 @@ public class ScrollingShooter extends ApplicationAdapter
 								&& (p.pos.x + (MapPiece.TILESIZE)) > (target.x * MapPiece.TILESIZE + map.offset))
 						{
 							p.pos.y = ((target.y * 50) - MapPiece.TILESIZE);
-							p.jumping = false;
 						}
 						if (p.pos.x + MapPiece.TILESIZE > ((target.x * MapPiece.TILESIZE) + map.offset)
 								&& p.pos.x + MapPiece.TILESIZE < ((target.x * MapPiece.TILESIZE) + 15 + map.offset)
@@ -209,7 +208,6 @@ public class ScrollingShooter extends ApplicationAdapter
 								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
 						{
 							p.pos.x = (target.x * MapPiece.TILESIZE) - MapPiece.TILESIZE + map.offset;
-							p.jumping = false;
 						}
 						else if (p.pos.x < ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE)
 								&& p.pos.x > ((target.x * MapPiece.TILESIZE) + map.offset + MapPiece.TILESIZE - 15)
@@ -217,7 +215,6 @@ public class ScrollingShooter extends ApplicationAdapter
 								&& (p.pos.y + (15)) > (target.y * MapPiece.TILESIZE))
 						{
 							p.pos.x = ((target.x * MapPiece.TILESIZE) + MapPiece.TILESIZE) + map.offset;
-							p.jumping = false;
 						}
 					}
 				}

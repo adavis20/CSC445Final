@@ -41,7 +41,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	public static final int MAX_VEL = 10;
 	public static final int MAX_BULLETS = 20;
 	public static final Vector2 GRAVITY = new Vector2(0, -2);
-        Texture t;
+	Texture t;
 	
 	public Player(Vector2 pos, Vector2 direction)
 	{
@@ -53,12 +53,15 @@ public class Player extends Entity implements Steerable<Vector2>
 		jumping = false;
 		bullets = new Array<Bullet>();
 		health = 100;
-                t = new Texture(Gdx.files.internal("sprites/player.png"));
+		t = new Texture(Gdx.files.internal("sprites/player.png"));
 	}
-	public Player(Vector2 pos, Vector2 direction, boolean t){
-                super(pos, direction);
+	
+	public Player(Vector2 pos, Vector2 direction, boolean t)
+	{
+		super(pos, direction);
 		this.pos = pos;
-        }
+	}
+	
 	@Override
 	public void update()
 	{
@@ -110,9 +113,9 @@ public class Player extends Entity implements Steerable<Vector2>
 	
 	public void draw(ShapeRenderer sr)
 	{
-//		sr.setColor(Color.BLUE);
-//		sr.rect(pos.x, pos.y, 50, 50);
-//		
+		// sr.setColor(Color.BLUE);
+		// sr.rect(pos.x, pos.y, 50, 50);
+		//
 		sr.setColor(Color.YELLOW);
 		sr.rectLine((this.pos.x + 25), (this.pos.y + 25), (this.pos.x + 25) + (direction.x * 40),
 				(this.pos.y + 25) + (direction.y * 40), 2);
@@ -214,7 +217,7 @@ public class Player extends Entity implements Steerable<Vector2>
 	public Location newLocation()
 	{
 		Vector2 copy = pos.cpy();
-		return new Player(copy.add((int) (Math.random() * 50), (int) (Math.random() * 50)), new Vector2(),false);
+		return new Player(copy.add((int) (Math.random() * 50), (int) (Math.random() * 50)), new Vector2(), false);
 	}
 	
 	@Override
